@@ -1,0 +1,30 @@
+{
+    "name": "cawaphp/elasticsearch",
+    "description": "Сáша ElasticSearch client",
+    "keywords": [
+        "cawa",
+        "elasticsearch"
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "tchiotludo"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Cawa\\ElasticSearch\\": "src"
+        }
+    },
+    "require": {
+        "php": "~7.0",
+        "cawaphp/cawa" : "dev-master",
+        "elasticsearch/elasticsearch": "^2.2",
+        "ongr/elasticsearch-dsl": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.3"
+    }
+}
