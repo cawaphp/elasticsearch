@@ -22,7 +22,7 @@
         "php": "~7.0",
         "cawaphp/cawa" : "dev-master",
         "elasticsearch/elasticsearch": "^2.2",
-        "ongr/elasticsearch-dsl": "^2.0"
+        "ongr/elasticsearch-dsl": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.3"
