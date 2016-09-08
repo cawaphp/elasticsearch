@@ -17,7 +17,6 @@ use Cawa\Events\DispatcherFactory;
 use Cawa\Events\ManualTimerEvent;
 use Cawa\Events\TimerEvent;
 use Elasticsearch\Transport;
-use GuzzleHttp\Ring\Future\FutureArray;
 
 class Connection extends \Elasticsearch\Connections\Connection
 {
@@ -28,9 +27,8 @@ class Connection extends \Elasticsearch\Connections\Connection
      */
     private $connected = false;
 
-
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function performRequest(
         $method,
@@ -102,8 +100,8 @@ class Connection extends \Elasticsearch\Connections\Connection
 
             $manualEvents->addData([
                 'host' => $transport->getLastConnection()->getHost(),
-                'dnsDuration' => $info['response']['transfer_stats']['namelookup_time'] * 1000 ,
-                'connectDuration' => $info['response']['transfer_stats']['connect_time'] * 1000 ,
+                'dnsDuration' => $info['response']['transfer_stats']['namelookup_time'] * 1000,
+                'connectDuration' => $info['response']['transfer_stats']['connect_time'] * 1000,
             ]);
             self::emit($manualEvents);
         }
@@ -125,5 +123,4 @@ class Connection extends \Elasticsearch\Connections\Connection
         $event->addData($data);
         self::emit($event);
     }
-
 }

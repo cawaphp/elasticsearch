@@ -42,13 +42,13 @@ class Client extends \Elasticsearch\Client
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function extractArgument(&$params, $arg)
     {
         if ($arg == 'index' && !isset($params[$arg]) && $this->index) {
             return $this->index;
-        } else if ($arg == 'type' && !isset($params[$arg]) && $this->type) {
+        } elseif ($arg == 'type' && !isset($params[$arg]) && $this->type) {
             return $this->type;
         } else {
             return parent::extractArgument($params, $arg);

@@ -18,7 +18,7 @@ use Elasticsearch\Transport;
 class ClientBuilder extends \Elasticsearch\ClientBuilder
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function instantiate(Transport $transport, callable $endpoint)
     {
