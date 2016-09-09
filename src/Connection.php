@@ -83,44 +83,46 @@ class Connection extends \Elasticsearch\Connections\Connection
     {
         $info = $transport->getLastConnection()->getLastRequestInfo();
 
-        $data = [
-            'url' => $info['response']['effective_url'],
-        ];
+        if (isset($info['response'])) {
+            $data = [
+                'url' => $info['response']['effective_url'],
+            ];
 
-        // connection duration
-        if (!$this->connected) {
-            $this->connected = true;
+            // connection duration
+            if (!$this->connected) {
+                $this->connected = true;
 
-            $manualEvents = new ManualTimerEvent('elasticsearch.connect');
-            $manualEvents->setStart($event->getStart());
-            $manualEvents->setDuration(
-                ($info['response']['transfer_stats']['namelookup_time'] +
-                $info['response']['transfer_stats']['connect_time'])
-            );
+                $manualEvents = new ManualTimerEvent('elasticsearch.connect');
+                $manualEvents->setStart($event->getStart());
+                $manualEvents->setDuration(
+                    ($info['response']['transfer_stats']['namelookup_time'] +
+                        $info['response']['transfer_stats']['connect_time'])
+                );
 
-            $manualEvents->addData([
-                'host' => $transport->getLastConnection()->getHost(),
-                'dnsDuration' => $info['response']['transfer_stats']['namelookup_time'] * 1000,
-                'connectDuration' => $info['response']['transfer_stats']['connect_time'] * 1000,
-            ]);
-            self::emit($manualEvents);
+                $manualEvents->addData([
+                    'host' => $transport->getLastConnection()->getHost(),
+                    'dnsDuration' => $info['response']['transfer_stats']['namelookup_time'] * 1000,
+                    'connectDuration' => $info['response']['transfer_stats']['connect_time'] * 1000,
+                ]);
+                self::emit($manualEvents);
+            }
+
+            // total result size
+            if (isset($result['hits']['total'])) {
+                $data['total'] = $result['hits']['total'];
+            }
+
+            // server duration
+            if (isset($result['took'])) {
+                $manualEvents = new ManualTimerEvent('elasticsearch.serverQuery');
+                $manualEvents->addData($data);
+                $manualEvents->setStart(microtime(true) - ($result['took'] / 1000));
+                $manualEvents->setDuration($result['took'] / 1000);
+                self::emit($manualEvents);
+            }
+
+            $event->addData($data);
+            self::emit($event);
         }
-
-        // total result size
-        if (isset($result['hits']['total'])) {
-            $data['total'] = $result['hits']['total'];
-        }
-
-        // server duration
-        if (isset($result['took'])) {
-            $manualEvents = new ManualTimerEvent('elasticsearch.serverQuery');
-            $manualEvents->addData($data);
-            $manualEvents->setStart(microtime(true) - ($result['took']/1000));
-            $manualEvents->setDuration($result['took']/1000);
-            self::emit($manualEvents);
-        }
-
-        $event->addData($data);
-        self::emit($event);
     }
 }
