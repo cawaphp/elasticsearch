@@ -76,7 +76,7 @@ class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \Js
      * @param string $key
      * @param $element
      *
-     * @return $this
+     * @return $this|self
      */
     public function add(string $key, $element = null) : self
     {
