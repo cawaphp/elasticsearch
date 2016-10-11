@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-declare (strict_types=1);
+declare (strict_types = 1);
 
 namespace Cawa\ElasticSearch;
 
-class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \JsonSerializable
+class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \JsonSerializable
 {
     /**
      * @var array
@@ -58,7 +58,7 @@ class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \Js
 
             if (is_null($key)) {
                 $leave = true;
-            } else if (isset($ref[$key]) && $ref[$key] instanceof QueryBuilder) {
+            } elseif (isset($ref[$key]) && $ref[$key] instanceof QueryBuilder) {
                 $ref = &$ref[$key]->elements;
             } else {
                 $ref = &$ref[$key];
@@ -135,6 +135,7 @@ class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \Js
     {
         if (!isset($key)) {
             $this->elements[] = $value;
+
             return;
         }
 
@@ -153,11 +154,14 @@ class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \Js
 
     /**
      * Count elements of an object
+     *
      * @link http://php.net/manual/en/countable.count.php
+     *
      * @return int The custom count as an integer.
      * </p>
      * <p>
      * The return value is cast to an integer.
+     *
      * @since 5.1.0
      */
     public function count()
@@ -166,7 +170,7 @@ class QueryBuilder  implements \Countable, \IteratorAggregate, \ArrayAccess, \Js
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
