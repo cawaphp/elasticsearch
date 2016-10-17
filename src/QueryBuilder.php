@@ -30,10 +30,11 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
 
     /**
      * @param string $key
+     * @param bool $create
      *
      * @return array|mixed
      */
-    private function &getReference(string $key)
+    private function &getReference(string $key, bool $create = false)
     {
         $key = preg_replace('`\[([0-9]+)\]`', '/$1', $key);
 
@@ -43,28 +44,31 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
         $leave = false;
 
         while ($leave == false) {
-            $key = array_shift($keys);
+            $currentKey = array_shift($keys);
+            if (is_numeric($currentKey)) {
+                $currentKey = (int) $currentKey;
+            }
 
             $add = false;
 
-            if (!is_null($key) && strpos($key, '[]') !== false) {
+            if (!is_null($currentKey) && strpos((string) $currentKey, '[]') !== false) {
                 $add = true;
-                $key = substr($key, 0, -2);
+                $currentKey = substr($currentKey, 0, -2);
             }
 
-            if (!is_null($key) && isset($ref[$key]) && $ref[$key] instanceof \stdClass) {
-                $ref[$key] = [];
+            if (!is_null($currentKey) && isset($ref[$currentKey]) && $ref[$currentKey] instanceof \stdClass) {
+                $ref[$currentKey] = [];
             }
 
-            if (is_null($key)) {
+            if (is_null($currentKey)) {
                 $leave = true;
-            } elseif (isset($ref[$key]) && $ref[$key] instanceof QueryBuilder) {
-                $ref = &$ref[$key]->elements;
+            } elseif (isset($ref[$currentKey]) && $ref[$currentKey] instanceof QueryBuilder) {
+                $ref = &$ref[$currentKey]->elements;
             } else {
-                $ref = &$ref[$key];
+                $ref = &$ref[$currentKey];
             }
 
-            if ($add) {
+            if ($add && $create) {
                 $ref = &$ref[];
             }
         }
@@ -74,14 +78,52 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
 
     /**
      * @param string $key
-     * @param $element
+     * @param array|self $element
+     *
+     * @return $this|self
+     */
+    public function set(string $key, $element = null) : self
+    {
+        $ref = &$this->getReference($key, true);
+        $ref = is_object($element) ? clone $element : $element;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param array|self $element
      *
      * @return $this|self
      */
     public function add(string $key, $element = null) : self
     {
-        $ref = &$this->getReference($key);
-        $ref = $element;
+        $get = $this->getReference($key, false);
+
+        if (!is_null($get) && strpos((string) $key, '[]') === false) {
+            throw new \InvalidArgumentException(sprintf(
+                "Already set path '%s' with value '%s'",
+                $key,
+                is_object($get) || is_array($get) ? json_encode($get) : $get
+            ));
+        }
+
+        return $this->set($key, $element);
+    }
+
+    /**
+     * @param string $key
+     * @param array|self $element
+     *
+     * @return $this|self
+     */
+    public function addIfNotExist(string $key, $element = null) : self
+    {
+        $get = $this->getReference($key, false);
+
+        if (is_null($get)) {
+            $this->set($key, $element);
+        }
 
         return $this;
     }
@@ -89,7 +131,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
     /**
      * @param string $key
      *
-     * @return array|mixed
+     * @return array|self|mixed
      */
     public function get(string $key)
     {
@@ -153,16 +195,9 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
     }
 
     /**
-     * Count elements of an object
+     * Required by interface Countable
      *
-     * @link http://php.net/manual/en/countable.count.php
-     *
-     * @return int The custom count as an integer.
-     * </p>
-     * <p>
-     * The return value is cast to an integer.
-     *
-     * @since 5.1.0
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -170,10 +205,43 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
     }
 
     /**
+     * @param array $elements
+     *
+     * @return array
+     */
+    private function cleanUp(array $elements) : array
+    {
+        $isNumeric = false;
+        $haveEmpty = false;
+        foreach ($elements as $key => $value) {
+            $isNumeric = is_numeric($key);
+            if (is_null($value)) {
+                $haveEmpty = true;
+            } else if (is_array($value)) {
+                $elements[$key] = $this->cleanUp($value);
+            } else if ($elements instanceof QueryBuilder) {
+                $elements[$key] = $this->cleanUp($value->elements);
+            }
+        }
+
+
+
+        if ($isNumeric && ($haveEmpty || array_keys($elements) !== range(0, count($elements) - 1))) {
+            $return = array_filter($elements);
+            sort($return);
+            return $return;
+        }
+
+        return $elements;
+    }
+
+    /**
+     * Required by interface JsonSerializable
+     *
      * {@inheritdoc}
      */
     public function jsonSerialize()
     {
-        return $this->elements;
+        return $this->cleanUp($this->elements);
     }
 }
