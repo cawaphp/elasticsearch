@@ -56,7 +56,12 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
                 $currentKey = substr($currentKey, 0, -2);
             }
 
-            if (!is_null($currentKey) && isset($ref[$currentKey]) && $ref[$currentKey] instanceof \stdClass) {
+            if (!is_null($currentKey) && !isset($ref[$currentKey]) && !$create) {
+                $return = null;
+                return $return;
+            }
+
+            if (!is_null($currentKey) && isset($ref[$currentKey]) && $ref[$currentKey] instanceof \stdClass && $create) {
                 $ref[$currentKey] = [];
             }
 
@@ -98,7 +103,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
      */
     public function add(string $key, $element = null) : self
     {
-        $get = $this->getReference($key, false);
+        $get = $this->getReference($key);
 
         if (!is_null($get) && strpos((string) $key, '[]') === false) {
             throw new \InvalidArgumentException(sprintf(
@@ -119,7 +124,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
      */
     public function addIfNotExist(string $key, $element = null) : self
     {
-        $get = $this->getReference($key, false);
+        $get = $this->getReference($key);
 
         if (is_null($get)) {
             $this->set($key, $element);
