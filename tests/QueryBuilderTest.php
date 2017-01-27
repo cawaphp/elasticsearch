@@ -18,11 +18,7 @@ declare (strict_types = 1);
  */
 namespace CawaTest\ElasticSearch;
 
-use Cawa\App\HttpFactory;
 use Cawa\ElasticSearch\QueryBuilder;
-use Cawa\Html\Forms\Fields\AbstractField;
-use Cawa\Html\Forms\Fields\Text;
-use Cawa\Html\Forms\Form;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class QueryBuilderTest extends TestCase

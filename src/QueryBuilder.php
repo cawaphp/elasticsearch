@@ -58,6 +58,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
 
             if (!is_null($currentKey) && !isset($ref[$currentKey]) && !$create) {
                 $return = null;
+
                 return $return;
             }
 
@@ -222,18 +223,17 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
             $isNumeric = is_numeric($key);
             if (is_null($value)) {
                 $haveEmpty = true;
-            } else if (is_array($value)) {
+            } elseif (is_array($value)) {
                 $elements[$key] = $this->cleanUp($value);
-            } else if ($elements instanceof QueryBuilder) {
+            } elseif ($elements instanceof QueryBuilder) {
                 $elements[$key] = $this->cleanUp($value->elements);
             }
         }
 
-
-
         if ($isNumeric && ($haveEmpty || array_keys($elements) !== range(0, count($elements) - 1))) {
             $return = array_filter($elements);
             sort($return);
+
             return $return;
         }
 
