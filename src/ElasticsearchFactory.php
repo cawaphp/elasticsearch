@@ -20,17 +20,17 @@ use Psr\Log\NullLogger;
 trait ElasticsearchFactory
 {
     /**
-     * @param string $name
+     * @param string $name config key or class name
      *
      * @return Client
      */
     private static function elasticsearch(string $name = null) : Client
     {
-        if ($return = DI::get(__METHOD__, $name)) {
+        list($container, $config, $return) = DI::detect(__METHOD__, 'elasticsearch', $name);
+
+        if ($return) {
             return $return;
         }
-
-        $config = DI::config()->get('elasticsearch/' . ($name ?: 'default'));
 
         $builder = new ClientBuilder();
         foreach ($config as $key => $value) {
@@ -62,6 +62,6 @@ trait ElasticsearchFactory
             $client->setType($config['type']);
         }
 
-        return DI::set(__METHOD__, $name, $client);
+        return DI::set(__METHOD__, $container, $client);
     }
 }
