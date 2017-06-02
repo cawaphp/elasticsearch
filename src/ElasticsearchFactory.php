@@ -43,7 +43,14 @@ trait ElasticsearchFactory
 
         $connectionFactory = new ConnectionFactory(
             ClientBuilder::defaultHandler(),
-            [],
+            [
+                'client' => [
+                    'headers' => [
+                        'Content-type' => ['application/json'],
+                        'Accept' => ['application/json']
+                    ]
+                ]
+            ],
             new SmartSerializer(),
             new NullLogger(),
             new NullLogger()

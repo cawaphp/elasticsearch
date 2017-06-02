@@ -20,8 +20,8 @@ class ClientBuilder extends \Elasticsearch\ClientBuilder
     /**
      * {@inheritdoc}
      */
-    protected function instantiate(Transport $transport, callable $endpoint)
+    protected function instantiate(Transport $transport, callable $endpoint, array $registeredNamespaces)
     {
-        return new Client($transport, $endpoint);
+        return new Client($transport, $endpoint, $registeredNamespaces);
     }
 }
