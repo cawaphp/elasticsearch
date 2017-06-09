@@ -9,13 +9,14 @@
  * file that was distributed with this source code.
  */
 
-declare (strict_types = 1);
+declare(strict_types = 1);
 
 /**
- * Сáша frameworks tests
+ * Сáша frameworks tests.
  *
  * @author tchiotludo <http://github.com/tchiotludo>
  */
+
 namespace CawaTest\ElasticSearch;
 
 use Cawa\ElasticSearch\QueryBuilder;
@@ -129,7 +130,7 @@ class QueryBuilderTest extends TestCase
                             'size' => 0,
                         ],
                     ],
-                ]
+                ],
             ],
             [
                 [
@@ -151,7 +152,7 @@ class QueryBuilderTest extends TestCase
                             ],
                         ],
                     ],
-                ]
+                ],
             ],
             [
                 [
@@ -182,8 +183,7 @@ class QueryBuilderTest extends TestCase
                             ],
                         ],
                     ],
-
-                ]
+                ],
             ],
         ];
     }

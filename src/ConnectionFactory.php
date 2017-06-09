@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-declare (strict_types = 1);
+declare(strict_types = 1);
 
 namespace Cawa\ElasticSearch;
 
@@ -20,13 +20,13 @@ use Psr\Log\LoggerInterface;
 
 class ConnectionFactory implements ConnectionFactoryInterface
 {
-    /** @var  array */
+    /** @var array */
     private $connectionParams;
 
-    /** @var  LoggerInterface */
+    /** @var LoggerInterface */
     private $logger;
 
-    /** @var  LoggerInterface */
+    /** @var LoggerInterface */
     private $tracer;
 
     /** @var callable */
@@ -34,8 +34,9 @@ class ConnectionFactory implements ConnectionFactoryInterface
 
     /** @var SerializerInterface */
     private $serializer;
+
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable            $handler
      * @param array               $connectionParams
@@ -45,12 +46,13 @@ class ConnectionFactory implements ConnectionFactoryInterface
      */
     public function __construct(callable $handler, array $connectionParams, SerializerInterface $serializer, LoggerInterface $logger, LoggerInterface $tracer)
     {
-        $this->handler          = $handler;
+        $this->handler = $handler;
         $this->connectionParams = $connectionParams;
-        $this->logger           = $logger;
-        $this->tracer           = $tracer;
-        $this->serializer       = $serializer;
+        $this->logger = $logger;
+        $this->tracer = $tracer;
+        $this->serializer = $serializer;
     }
+
     /**
      * @param $hostDetails
      *

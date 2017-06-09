@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-declare (strict_types = 1);
+declare(strict_types = 1);
 
 namespace Cawa\ElasticSearch;
 
@@ -68,7 +68,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
 
             if (is_null($currentKey)) {
                 $leave = true;
-            } elseif (isset($ref[$currentKey]) && $ref[$currentKey] instanceof QueryBuilder) {
+            } elseif (isset($ref[$currentKey]) && $ref[$currentKey] instanceof self) {
                 $ref = &$ref[$currentKey]->elements;
             } else {
                 $ref = &$ref[$currentKey];
@@ -201,7 +201,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
     }
 
     /**
-     * Required by interface Countable
+     * Required by interface Countable.
      *
      * {@inheritdoc}
      */
@@ -225,7 +225,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
                 $haveEmpty = true;
             } elseif (is_array($value)) {
                 $elements[$key] = $this->cleanUp($value);
-            } elseif ($elements instanceof QueryBuilder) {
+            } elseif ($elements instanceof self) {
                 $elements[$key] = $this->cleanUp($value->elements);
             }
         }
@@ -241,7 +241,7 @@ class QueryBuilder implements \Countable, \IteratorAggregate, \ArrayAccess, \Jso
     }
 
     /**
-     * Required by interface JsonSerializable
+     * Required by interface JsonSerializable.
      *
      * {@inheritdoc}
      */
