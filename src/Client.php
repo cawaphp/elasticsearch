@@ -21,11 +21,23 @@ class Client extends \Elasticsearch\Client
     private $index;
 
     /**
-     * @param string $index
+     * @return string
      */
-    public function setIndex(string $index)
+    public function getIndex() : ?string
+    {
+        return $this->index;
+    }
+
+    /**
+     * @param string $index
+     *
+     * @return $this
+     */
+    public function setIndex(string $index = null) : self
     {
         $this->index = $index;
+
+        return $this;
     }
 
     /**
@@ -34,11 +46,23 @@ class Client extends \Elasticsearch\Client
     private $type;
 
     /**
-     * @param string $type
+     * @return string
      */
-    public function setType(string $type)
+    public function getType() : ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function setType(string $type = null) : self
     {
         $this->type = $type;
+
+        return $this;
     }
 
     /**
